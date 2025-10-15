@@ -1,0 +1,7 @@
+name: sass_to_scss
+
+environment:
+  sdk: ^3.7.0
+
+dev_dependencies:
+  sass_api: ^15.12.1
