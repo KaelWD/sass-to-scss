@@ -37,8 +37,9 @@ class FormatterVisitor with RecursiveStatementVisitor {
     var firstLine = node.span.text.split('\n').first;
     if (firstLine.contains('//')) {
       var comment = firstLine.split('//').last.trimRight();
-      _buffer.writeln(' //$comment');
+      _buffer.write(' //$comment');
     }
+    _buffer.writeln();
   }
 
   String _excludeComment(String text) {
@@ -123,9 +124,12 @@ class FormatterVisitor with RecursiveStatementVisitor {
   }
 
   void visitDebugRule(DebugRule node) {
-    throw UnimplementedError('visitDebugRule');
-    // _checkBlankLine(node);
-    // _resetLastLine(node);
+    _checkBlankLine(node);
+    _buffer.write(_indentStr());
+    _buffer.write(_excludeComment(node.span.text));
+    _buffer.write(';');
+    _extractComment(node);
+    _resetLastLine(node);
   }
 
   void visitDeclaration(Declaration node) {
@@ -161,9 +165,12 @@ class FormatterVisitor with RecursiveStatementVisitor {
   }
 
   void visitErrorRule(ErrorRule node) {
-    throw UnimplementedError('visitErrorRule');
-    // _checkBlankLine(node);
-    // _resetLastLine(node);
+    _checkBlankLine(node);
+    _buffer.write(_indentStr());
+    _buffer.write(_excludeComment(node.span.text));
+    _buffer.write(';');
+    _extractComment(node);
+    _resetLastLine(node);
   }
 
   void visitExtendRule(ExtendRule node) {
@@ -200,9 +207,19 @@ class FormatterVisitor with RecursiveStatementVisitor {
   }
 
   void visitFunctionRule(FunctionRule node) {
-    throw UnimplementedError('visitFunctionRule');
-    // _checkBlankLine(node);
-    // _resetLastLine(node);
+    _checkBlankLine(node);
+    _buffer.write(_indentStr());
+    _buffer.write('@function ');
+    _buffer.write(node.name);
+    _buffer.write(node.parameters.span.text);
+    _buffer.write(' {');
+    _extractComment(node);
+    _indent++;
+    super.visitFunctionRule(node);
+    _indent--;
+    _buffer.write(_indentStr());
+    _buffer.writeln('}');
+    _resetLastLine(node);
   }
 
   void visitIfRule(IfRule node) {
@@ -317,9 +334,12 @@ class FormatterVisitor with RecursiveStatementVisitor {
   }
 
   void visitReturnRule(ReturnRule node) {
-    throw UnimplementedError('visitReturnRule');
-    // _checkBlankLine(node);
-    // _resetLastLine(node);
+    _checkBlankLine(node);
+    _buffer.write(_indentStr());
+    _buffer.write(_excludeComment(node.span.text));
+    _buffer.write(';');
+    _extractComment(node);
+    _resetLastLine(node);
   }
 
   void visitSilentComment(SilentComment node) {
@@ -395,9 +415,12 @@ class FormatterVisitor with RecursiveStatementVisitor {
   }
 
   void visitWarnRule(WarnRule node) {
-    throw UnimplementedError('visitWarnRule');
-    // _checkBlankLine(node);
-    // _resetLastLine(node);
+    _checkBlankLine(node);
+    _buffer.write(_indentStr());
+    _buffer.write(_excludeComment(node.span.text));
+    _buffer.write(';');
+    _extractComment(node);
+    _resetLastLine(node);
   }
 
   void visitWhileRule(WhileRule node) {
