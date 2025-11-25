@@ -17,7 +17,9 @@ const args = parseArgs({
     exclude: {
       type: 'string',
       multiple: true,
-    }
+    },
+    'no-rename': {
+      type: 'boolean',
     },
     'no-verify': {
       type: 'boolean',
@@ -103,7 +105,12 @@ async function transformVue (filename) {
 async function transformFile (filename) {
   const out = await sassToScss({ filename })
   if (!args.values['dry-run']) {
-    await fs.writeFile(filename.replace(/\.sass$/, '.scss'), out, 'utf-8')
+    if (args.values['no-rename']) {
+      await fs.writeFile(filename.replace(/\.sass$/, '.scss'), out, 'utf-8')
+    } else {
+      await fs.writeFile(filename, out, 'utf-8')
+      await fs.rename(filename, filename.replace(/\.sass$/, '.scss'))
+    }
   }
 }
 
