@@ -17,6 +17,7 @@ const args = parseArgs({
     exclude: {
       type: 'string',
       multiple: true,
+      default: [],
     },
     'no-rename': {
       type: 'boolean',
