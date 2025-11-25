@@ -112,13 +112,10 @@ class FormatterVisitor with RecursiveStatementVisitor {
     _checkBlankLine(node);
     _buffer.write(_indentStr());
     _buffer.write('@content');
-    if (node.arguments.isEmpty) {
-      _buffer.write(';');
-    } else {
-      _buffer.write('(');
+    if (!node.arguments.isEmpty) {
       _buffer.write(node.arguments.span.text);
-      _buffer.write(');');
     }
+    _buffer.write(';');
     _extractComment(node);
     _resetLastLine(node);
   }
