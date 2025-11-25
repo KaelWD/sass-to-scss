@@ -1,0 +1,22 @@
+@use './settings.sass'
+
+@mixin layer ($name)
+  @if (settings.$layers)
+    @layer vuetify.#{$name}
+      @content
+  @else
+    @content
+
+@mixin position($positions, $important: false)
+  @each $position in $positions
+    &--#{$position}
+      position: #{$position} if($important, !important, null)
+
+@mixin rounded($radius: null, $important: false)
+  &
+    border-radius: $radius if($important, !important, null)
+
+@mixin density($name, $densities)
+  @each $density, $multiplier in $densities
+    .#{$name}--density-#{$density}
+      @content($multiplier * settings.$spacer)

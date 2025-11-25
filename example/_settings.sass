@@ -1,0 +1,50 @@
+@use 'sass:math'
+@use 'sass:map'
+@use 'sass:meta'
+
+$color-pack: true !default
+$reset: true !default
+$layers: false !default
+
+$body-font-family: 'Roboto', sans-serif !default
+$font-size-root: 1rem !default
+$line-height-root: 1.5 !default
+$border-color-root: rgba(var(--v-border-color), var(--v-border-opacity)) !default
+$border-radius-root: 4px !default
+$border-style-root: solid !default
+$border-width-root: thin !default
+$transition-duration-root: 0.3s !default
+$transition-move-duration-root: 0.5s !default
+
+$spacer: 4px !default
+$spacers-steps: 16 !default
+
+$grid-breakpoints: () !default
+$container-max-widths: () !default
+
+$states: () !default
+
+$spacers: () !default
+@if (meta.type-of($spacers) == list) 
+  @for $i from 0 through $spacers-steps 
+    $spacers: map.merge($spacers, ($i: $spacer * $i))
+
+$negative-spacers: () !default
+@if (meta.type-of($negative-spacers) == list) 
+  @for $i from 1 through $spacers-steps 
+    $negative-spacers: map.merge($negative-spacers, ("n" + $i: -$spacer * $i))
+
+$grid-gutter: $spacer * 6 !default
+$form-grid-gutter: $spacer * 2 !default
+$grid-columns: 12 !default
+$container-padding-x: $spacer * 4 !default
+
+$heading-font-family: $body-font-family !default
+
+$standard-easing: cubic-bezier(0.4, 0, 0.2, 1) !default
+$decelerated-easing: cubic-bezier(0.0, 0, 0.2, 1) !default // Entering
+$accelerated-easing: cubic-bezier(0.4, 0, 1, 1) !default // Leaving
+
+$bootable-transition: 0.2s $decelerated-easing !default
+$blockquote-font-size: 18px !default
+$blockquote-font-weight: 300 !default
