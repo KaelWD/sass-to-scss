@@ -191,9 +191,12 @@ class FormatterVisitor with RecursiveStatementVisitor {
   }
 
   void visitForwardRule(ForwardRule node) {
-    throw UnimplementedError('visitForwardRule');
-    // _checkBlankLine(node);
-    // _resetLastLine(node);
+    _checkBlankLine(node);
+    _buffer.write(_indentStr());
+    _buffer.write(_excludeComment(node.span.text));
+    _buffer.write(';');
+    _extractComment(node);
+    _resetLastLine(node);
   }
 
   void visitFunctionRule(FunctionRule node) {
