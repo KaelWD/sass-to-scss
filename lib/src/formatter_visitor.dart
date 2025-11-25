@@ -41,6 +41,13 @@ class FormatterVisitor with RecursiveStatementVisitor {
     }
   }
 
+  String _excludeComment(String text) {
+    if (text.contains('//')) {
+      return text.split('//').first.trimRight();
+    }
+    return text;
+  }
+
   // VISITOR METHODS
 
   // use super
@@ -162,7 +169,7 @@ class FormatterVisitor with RecursiveStatementVisitor {
   void visitExtendRule(ExtendRule node) {
     _checkBlankLine(node);
     _buffer.write(_indentStr());
-    _buffer.write(node.span.text);
+    _buffer.write(_excludeComment(node.span.text));
     _buffer.write(';');
     _extractComment(node);
     _resetLastLine(node);
@@ -368,7 +375,7 @@ class FormatterVisitor with RecursiveStatementVisitor {
   void visitUseRule(UseRule node) {
     _checkBlankLine(node);
     _buffer.write(_indentStr());
-    _buffer.write(node.span.text);
+    _buffer.write(_excludeComment(node.span.text));
     _buffer.write(';');
     _extractComment(node);
     _resetLastLine(node);
@@ -377,7 +384,7 @@ class FormatterVisitor with RecursiveStatementVisitor {
   void visitVariableDeclaration(VariableDeclaration node) {
     _checkBlankLine(node);
     _buffer.write(_indentStr());
-    _buffer.write(node.span.text);
+    _buffer.write(_excludeComment(node.span.text));
     _buffer.write(';');
     _extractComment(node);
     _resetLastLine(node);
