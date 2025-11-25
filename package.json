@@ -4,7 +4,9 @@
   "description": "",
   "type": "module",
   "main": "index.js",
-  "bin": "bin/sass-to-scss.js",
+  "bin": {
+    "sass-to-scss": "bin/sass-to-scss.js"
+  },
   "scripts": {
     "build": "dart compile exe -o dist/sass-to-scss lib/main.dart"
   },
@@ -34,5 +36,10 @@
   "files": [
     "bin",
     "dist"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KaelWD/sass-to-scss.git"
+  },
+  "bugs": "https://github.com/KaelWD/sass-to-scss/issues"
 }
