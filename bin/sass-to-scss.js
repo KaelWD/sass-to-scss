@@ -18,6 +18,10 @@ const args = parseArgs({
       type: 'string',
       multiple: true,
     }
+    },
+    'no-verify': {
+      type: 'boolean',
+    },
   },
 })
 
@@ -106,6 +110,7 @@ async function transformFile (filename) {
 async function sassToScss ({ source, filename }) {
   const arg = [filename]
   if (source) arg.push('--stdin')
+  if (args.values['no-verify']) arg.push('--no-verify')
   const result = x(path.resolve(import.meta.dirname, '../dist/sass-to-scss'), arg)
   if (source) {
     await ReadableStream.from([source]).pipeTo(Writable.toWeb(result.process.stdin))
