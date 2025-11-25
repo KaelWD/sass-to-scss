@@ -1,0 +1,60 @@
+name: Publish
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: 'ubuntu-24.04'
+            arch: 'x64'
+            suffix: '-linux-x64'
+          - os: 'ubuntu-24.04'
+            arch: 'arm64'
+            suffix: '-linux-arm64'
+          - os: 'macos-14'
+            arch: 'arm64'
+            suffix: '-mac'
+          - os: 'windows-2022'
+            arch: 'x64'
+            suffix: '.exe'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get
+      - run: >-
+          dart compile exe 
+          --target-arch=${{ matrix.arch }} 
+          --output=dist/sass-to-scss${{ matrix.suffix }} 
+          lib/main.dart
+      - uses: actions/upload-artifact@v5
+        with:
+          name: dist-${{ matrix.os }}-${{ matrix.arch }}
+          path: dist
+
+  publish:
+    runs-on: ubuntu-24.04
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          cache: 'pnpm'
+          node-version-file: '.nvmrc'
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: dist-*
+          path: dist
+          merge-multiple: true
+      - run: npm publish
+      - run: pnpm dlx changelogithub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
