@@ -6,4 +6,6 @@
 .DS_Store
 .dart_tool/
 build/
+dist/
 pubspec.lock
+node_modules
