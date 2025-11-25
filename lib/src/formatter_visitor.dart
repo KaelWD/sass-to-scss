@@ -37,7 +37,7 @@ class FormatterVisitor with RecursiveStatementVisitor {
     var firstLine = node.span.text.split('\n').first;
     if (firstLine.contains('//')) {
       var comment = firstLine.split('//').last.trimRight();
-      _buffer.write(' //$comment');
+      _buffer.writeln(' //$comment');
     }
   }
 
@@ -78,15 +78,41 @@ class FormatterVisitor with RecursiveStatementVisitor {
   }
 
   void visitAtRule(AtRule node) {
-    throw UnimplementedError('visitAtRule');
-    // _checkBlankLine(node);
-    // _resetLastLine(node);
+    _checkBlankLine(node);
+    _buffer.write(_indentStr());
+    _buffer.write('@');
+    _buffer.write(node.name);
+    if (node.value != null) {
+      _buffer.write(' ${node.value}');
+    }
+    if (node.children != null) {
+      _buffer.write(' {');
+      _extractComment(node);
+      _indent++;
+      super.visitAtRule(node);
+      _indent--;
+      _buffer.write(_indentStr());
+      _buffer.writeln('}');
+    } else {
+      _buffer.write(';');
+      _extractComment(node);
+    }
+    _resetLastLine(node);
   }
 
   void visitContentRule(ContentRule node) {
-    throw UnimplementedError('visitContentRule');
-    // _checkBlankLine(node);
-    // _resetLastLine(node);
+    _checkBlankLine(node);
+    _buffer.write(_indentStr());
+    _buffer.write('@content');
+    if (node.arguments.isEmpty) {
+      _buffer.write(';');
+    } else {
+      _buffer.write('(');
+      _buffer.write(node.arguments.span.text);
+      _buffer.write(');');
+    }
+    _extractComment(node);
+    _resetLastLine(node);
   }
 
   void visitDebugRule(DebugRule node) {
@@ -106,7 +132,6 @@ class FormatterVisitor with RecursiveStatementVisitor {
 
     _buffer.write(';');
     _extractComment(node);
-    _buffer.writeln();
 
     _resetLastLine(node);
   }
@@ -119,7 +144,6 @@ class FormatterVisitor with RecursiveStatementVisitor {
     _buffer.write(node.list.span.text);
     _buffer.write(' {');
     _extractComment(node);
-    _buffer.writeln();
     _indent++;
     super.visitEachRule(node);
     _indent--;
@@ -141,7 +165,6 @@ class FormatterVisitor with RecursiveStatementVisitor {
     _buffer.write(node.span.text);
     _buffer.write(';');
     _extractComment(node);
-    _buffer.writeln();
     _resetLastLine(node);
   }
 
@@ -152,7 +175,6 @@ class FormatterVisitor with RecursiveStatementVisitor {
     _buffer.write(node.isExclusive ? 'to' : 'through');
     _buffer.write(' ${node.to} {');
     _extractComment(node);
-    _buffer.writeln();
     _indent++;
     super.visitForRule(node);
     _indent--;
@@ -319,7 +341,6 @@ class FormatterVisitor with RecursiveStatementVisitor {
     }
     _buffer.write(' {');
     _extractComment(node.selector);
-    _buffer.writeln();
 
     _indent++;
     visitChildren(node.children);
@@ -350,7 +371,6 @@ class FormatterVisitor with RecursiveStatementVisitor {
     _buffer.write(node.span.text);
     _buffer.write(';');
     _extractComment(node);
-    _buffer.writeln();
     _resetLastLine(node);
   }
 
@@ -360,7 +380,6 @@ class FormatterVisitor with RecursiveStatementVisitor {
     _buffer.write(node.span.text);
     _buffer.write(';');
     _extractComment(node);
-    _buffer.writeln();
     _resetLastLine(node);
   }
 
