@@ -7,6 +7,7 @@ import MagicString from 'magic-string'
 import { x } from 'tinyexec'
 import { glob } from 'tinyglobby'
 import { parseArgs } from 'node:util'
+import os from 'node:os'
 
 const args = parseArgs({
   options: {
@@ -119,7 +120,28 @@ async function sassToScss ({ source, filename }) {
   const arg = [filename]
   if (source) arg.push('--stdin')
   if (args.values['no-verify']) arg.push('--no-verify')
-  const result = x(path.resolve(import.meta.dirname, '../dist/sass-to-scss'), arg)
+
+  const arch = os.platform + '-' + os.arch()
+  const suffix = {
+    'win32-x64': '.exe',
+    'linux-x64': '-linux-x64',
+    'linux-arm64': '-linux-arm64',
+    'darwin-arm64': '-mac'
+  }[arch]
+  if (!suffix) {
+    throw new Error(`Unsupported architecture "${arch}"`)
+  }
+
+  let binary = path.resolve(import.meta.dirname, `../dist/sass-to-scss`)
+  if (await fs.access(binary, fs.constants.R_OK | fs.constants.X_OK).catch(() => false)) {
+    // dev environment
+  } else if (await fs.access(binary + suffix, fs.constants.R_OK | fs.constants.X_OK).catch(() => false)) {
+    binary = binary + suffix
+  } else {
+    throw new Error(`sass-to-scss${suffix} is not executable`)
+  }
+
+  const result = x(binary, arg)
   if (source) {
     await ReadableStream.from([source]).pipeTo(Writable.toWeb(result.process.stdin))
   }
