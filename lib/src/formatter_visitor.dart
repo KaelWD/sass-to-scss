@@ -276,9 +276,10 @@ class FormatterVisitor with RecursiveStatementVisitor {
   }
 
   void visitLoudComment(LoudComment node) {
-    throw UnimplementedError('visitLoudComment');
-    // _checkBlankLine(node);
-    // _resetLastLine(node);
+    _checkBlankLine(node);
+    _buffer.write(_indentStr());
+    _buffer.writeln(node.span.text);
+    _resetLastLine(node);
   }
 
   void visitMediaRule(MediaRule node) {
