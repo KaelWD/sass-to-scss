@@ -8,9 +8,22 @@ import { x } from 'tinyexec'
 import { glob } from 'tinyglobby'
 import { parseArgs } from 'node:util'
 
+const args = parseArgs({
+  options: {
+    'dry-run': {
+      type: 'boolean',
+      short: 'n',
+    },
+    exclude: {
+      type: 'string',
+      multiple: true,
+    }
+  },
+})
+
 ;(async function main () {
   const paths = await glob(['**/*.sass', '**/*.vue'], {
-    ignore: '**/node_modules/**',
+    ignore: ['**/node_modules/**'].concat(...args.values.exclude),
     cwd: process.cwd(),
   })
 
@@ -78,12 +91,16 @@ async function transformVue (filename) {
     s.update(block.loc.start.offset, block.loc.end.offset, '\n' + out)
   }
 
-  await fs.writeFile(filename, s.toString(), 'utf-8')
+  if (!args.values['dry-run']) {
+    await fs.writeFile(filename, s.toString(), 'utf-8')
+  }
 }
 
 async function transformFile (filename) {
   const out = await sassToScss({ filename })
-  await fs.writeFile(filename.replace(/\.sass$/, '.scss'), out, 'utf-8')
+  if (!args.values['dry-run']) {
+    await fs.writeFile(filename.replace(/\.sass$/, '.scss'), out, 'utf-8')
+  }
 }
 
 async function sassToScss ({ source, filename }) {
