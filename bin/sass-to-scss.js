@@ -136,12 +136,10 @@ async function sassToScss ({ source, filename }) {
   }
 
   let binary = path.resolve(import.meta.dirname, `../dist/sass-to-scss`)
-  if (await fs.access(binary, fs.constants.R_OK | fs.constants.X_OK).catch(() => false)) {
+  if (await fs.stat(binary).catch(() => false)) {
     // dev environment
-  } else if (await fs.access(binary + suffix, fs.constants.R_OK | fs.constants.X_OK).catch(() => false)) {
+  } else if (await fs.stat(binary + suffix).catch(() => false)) {
     binary = binary + suffix
-  } else {
-    throw new Error(`sass-to-scss${suffix} is not executable`)
   }
 
   const result = x(binary, arg)
