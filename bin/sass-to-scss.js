@@ -47,11 +47,11 @@ const args = parseArgs({
       } else {
         await transformFile(file)
       }
+      printDone(file, start)
     } catch (err) {
-      process.stdout.write('\n')
+      printDone(file, start, true)
       throw err
     }
-    printDone(file, start)
   }
 })()
 
@@ -63,10 +63,10 @@ function printStart (file) {
   }
 }
 
-function printDone (file, start) {
+function printDone (file, start, error) {
   const time = performance.now() - start
   if (process.stdout.isTTY) {
-    process.stdout.write(`\x1B[1K\r✅  ${file} (${time.toFixed(0)}ms)\n`)
+    process.stdout.write(`\x1B[1K\r${error ? '❌' : '✅'}  ${file} (${time.toFixed(0)}ms)\n`)
   } else {
     process.stdout.write(`done (${time.toFixed(0)}ms)\n`)
   }
@@ -78,8 +78,7 @@ async function transformVue (filename) {
     try {
       vue = await import('vue/compiler-sfc').then(m => m.parse)
     } catch (err) {
-      console.log(err)
-      return []
+      throw err
     }
   }
 
