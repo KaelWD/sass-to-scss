@@ -18,6 +18,7 @@ const args = parseArgs({
     },
     exclude: {
       type: 'string',
+      short: 'x',
       multiple: true,
       default: [],
     },
@@ -26,6 +27,7 @@ const args = parseArgs({
     },
     'no-verify': {
       type: 'boolean',
+      short: 'n',
     },
   },
 })
