@@ -8,6 +8,10 @@ class FormatterVisitor with RecursiveStatementVisitor {
   String _indentStr() => '  ' * _indent;
 
   String format(Statement root) {
+    // Keep original indent, useful for vue files
+    _indent = RegExp(r'^\n*( *)').firstMatch(root.span.text)?.group(1)?.length ?? 0;
+    _indent ~/= 2;
+
     root.accept(this);
     return _buffer.toString();
   }
