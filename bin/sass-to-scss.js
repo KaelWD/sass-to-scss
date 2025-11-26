@@ -11,9 +11,10 @@ import os from 'node:os'
 
 const args = parseArgs({
   options: {
-    'dry-run': {
+    'write': {
       type: 'boolean',
-      short: 'n',
+      short: 'w',
+      default: false,
     },
     exclude: {
       type: 'string',
@@ -99,14 +100,14 @@ async function transformVue (filename) {
     s.update(block.loc.start.offset, block.loc.end.offset, '\n' + out)
   }
 
-  if (!args.values['dry-run']) {
+  if (args.values.write) {
     await fs.writeFile(filename, s.toString(), 'utf-8')
   }
 }
 
 async function transformFile (filename) {
   const out = await sassToScss({ filename })
-  if (!args.values['dry-run']) {
+  if (args.values.write) {
     if (args.values['no-rename']) {
       await fs.writeFile(filename.replace(/\.sass$/, '.scss'), out, 'utf-8')
     } else {
